@@ -1,8 +1,16 @@
 package main
 
 import (
+	"fmt"
+	"net/http"
+
+	"github.com/gorilla/mux"
+	bsv1 "github.com/serj213/bookService-contract/gen/go/bookService"
 	"github.com/serj213/bookServiceApi/internal/config"
+	HTTPServer "github.com/serj213/bookServiceApi/internal/http"
+	"github.com/serj213/bookServiceApi/internal/services"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -23,6 +31,40 @@ func main(){
 
 	logSugar.Info("logger is enabled")
 
+	// инициализация grpc клиента
+
+
+	conn, err := grpc.Dial(fmt.Sprintf("localhost:%d", cfg.GRPC.Port), grpc.WithInsecure())
+	if err != nil {
+		logSugar.Infof("failed start grpc client: %w", err)
+		panic(err)
+	}
+	
+	logSugar.Info("grpc client started...")
+
+	defer conn.Close()
+
+	bookClient := bsv1.NewBookClient(conn)
+
+	bookService := services.New(logSugar, bookClient)
+
+	httpServer := HTTPServer.New(logSugar, bookService)
+
+	router := mux.NewRouter()
+
+	router.HandleFunc("/create", httpServer.Create).Methods(http.MethodPost)
+
+	srv := &http.Server{
+		Handler: router,
+		Addr: cfg.HTTP.Addr,
+	}
+
+	logSugar.Infof("http server started: %d...", cfg.HTTP.Addr)
+
+	if err := srv.ListenAndServe(); err != nil {
+		logSugar.Infof("failed http server: %w", err)
+		panic(err)
+	}
 }
 
 func setupLogger(env string) *zap.Logger{
