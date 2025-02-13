@@ -7,6 +7,10 @@ import (
 	"github.com/serj213/bookServiceApi/internal/domain"
 )
 
+const (
+	StatusFailed = "failed"
+)
+
 type ResponseErr struct {
 	Status string `json:"status"`
 	Msg string `json:"msg"`
@@ -27,10 +31,12 @@ type ResponseOkBody struct {
 
 func ErrResponse(msg string, w http.ResponseWriter, r *http.Request, status int) {
 
-	var response ResponseErr
-
+	resp := ResponseErr{
+		Status: StatusFailed,
+		Msg: msg,
+	}
 	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(&response)
+	_ = json.NewEncoder(w).Encode(&resp)
 }
 
 func ResponseOk(data any, w http.ResponseWriter) {

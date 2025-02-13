@@ -2,7 +2,10 @@ package http
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
+
+	"github.com/serj213/bookServiceApi/internal/domain"
 )
 
 func (h HTTPServer) Create(w http.ResponseWriter, r *http.Request) {
@@ -23,6 +26,10 @@ func (h HTTPServer) Create(w http.ResponseWriter, r *http.Request) {
 	book, err := h.BookService.Create(r.Context(), bookReq.Title, bookReq.Author, bookReq.CategoryId)
 	if err != nil {
 		h.log.Errorf("failed create serivce: %w", err)
+		if errors.Is(err, domain.ErrBookExist){
+			ErrResponse("book is exists", w, r, http.StatusInternalServerError)
+			return
+		}
 		ErrResponse("server error", w, r, http.StatusInternalServerError)
 		return
 	}
