@@ -9,7 +9,7 @@ import (
 )
 
 func (h HTTPServer) Create(w http.ResponseWriter, r *http.Request) {
-	var bookReq BookRequest
+	var bookReq CreateBookReq
 
 	if err := json.NewDecoder(r.Body).Decode(&bookReq); err != nil {
 		ErrResponse("invalid request", w, r, http.StatusBadRequest)
@@ -75,4 +75,40 @@ func (h HTTPServer) GetBooks(w http.ResponseWriter, r *http.Request) {
 
 	ResponseOk(resOk, w)
 
+}
+
+
+func (h HTTPServer) UpdateBook(w http.ResponseWriter, r *http.Request) {
+	var req BookRequest
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		ErrResponse("invalid request", w, r, http.StatusBadRequest)
+		return
+	}
+
+	if err := req.Validate(); err != nil {
+		ErrResponse("invalid request", w, r, http.StatusBadRequest)
+		return
+	}
+
+	defer r.Body.Close()
+
+	bookDomain := reqBookToDomain(req)
+
+	updateBook, err := h.BookService.UpdateBook(r.Context(), bookDomain)
+	if err != nil {
+		ErrResponse("server error", w, r, http.StatusInternalServerError)
+		return
+	}
+
+	respData := BookResponse{
+		Id: updateBook.ID,
+		Title: updateBook.Title,
+		Author: updateBook.Author,
+		CategoryId: updateBook.CategoryId,
+		CreatedAt: updateBook.CreatedAt,
+		UpdatedAt: updateBook.UpdatedAt,
+	}
+
+	ResponseOk(respData, w)
 }

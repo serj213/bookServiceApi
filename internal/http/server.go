@@ -10,6 +10,7 @@ import (
 type BookService interface {
 	Create(ctx context.Context, title string, author string, categoryId int)(domain.Book, error)
 	GetBooks(ctx context.Context) ([]domain.Book, error)
+	UpdateBook(ctx context.Context, book domain.Book) (domain.Book, error)
 }
 
 

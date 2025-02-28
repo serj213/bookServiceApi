@@ -77,19 +77,27 @@ func (s BookService) GetBooks(ctx context.Context) ([]domain.Book, error) {
 	return books, nil
 }
 
-// func (s BookService) UpdateBook(ctx context.Context, book domain.Book) (domain.Book, error) {
+func (s BookService) UpdateBook(ctx context.Context, book domain.Book) (domain.Book, error) {
 
-// 	log := s.log.With(zap.String("method", "UpdateBook"))
+	log := s.log.With(zap.String("method", "UpdateBook"))
 
-// 	log.Info("update book active")
+	log.Info("update book active")
 
-// 	req := &bsv1.BookRequest{
-// 		Id: int64(book.ID),
-// 		Title: book.Title,
-// 		Author: book.Author,
-// 		CategoryId: int64(book.CategoryId),
-// 	}
+	req := &bsv1.BookRequest{
+		Id: int64(book.ID),
+		Title: book.Title,
+		Author: book.Author,
+		CategoryId: int64(book.CategoryId),
+	}
 
+	pbBook, err := s.grpc.UpdateBook(ctx, req)
+	if err != nil {
+		return domain.Book{}, err
+	}
 
+	respBook := bookToDomain(pbBook)
+	
 
-// }
+	return respBook, nil
+
+}

@@ -54,6 +54,7 @@ func main(){
 
 	router.HandleFunc("/create", httpServer.Create).Methods(http.MethodPost)
 	router.HandleFunc("/books", httpServer.GetBooks).Methods(http.MethodGet)
+	router.HandleFunc("/update", httpServer.UpdateBook).Methods(http.MethodPut)
 
 	srv := &http.Server{
 		Handler: router,
