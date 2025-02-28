@@ -39,6 +39,7 @@ func (h HTTPServer) Create(w http.ResponseWriter, r *http.Request) {
 		Title: book.Title,
 		Author: book.Author,
 		CategoryId: book.CategoryId,
+		CreatedAt: book.CreatedAt,
 	}, w)
 }
 
@@ -53,11 +54,17 @@ func (h HTTPServer) GetBooks(w http.ResponseWriter, r *http.Request) {
 	resBooks := make([]BookResponse, len(books))
 
 	for i, book := range books {
+
+		if book.UpdatedAt != nil {
+			resBooks[i].UpdatedAt = book.UpdatedAt
+		}
+		
 		resBooks[i] = BookResponse{
 			Id: book.ID,
 			Title: book.Title,
 			Author: book.Author,
 			CategoryId: book.CategoryId,
+			CreatedAt: book.CreatedAt,
 		}
 	}
 

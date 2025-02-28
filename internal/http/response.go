@@ -3,6 +3,7 @@ package http
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/serj213/bookServiceApi/internal/domain"
 )
@@ -21,6 +22,8 @@ type BookResponse struct {
 	Title string `json:"title"`
 	Author string `json:"author"`
 	CategoryId int `json:"category_id"`
+	UpdatedAt *time.Time `json:"updated_at,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type ResponseOkBody struct {
@@ -35,7 +38,6 @@ type GetBooksResponseOk struct {
 
 
 func ErrResponse(msg string, w http.ResponseWriter, r *http.Request, status int) {
-
 	resp := ResponseErr{
 		Status: StatusFailed,
 		Msg: msg,

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	bsv1 "github.com/serj213/bookService/pb/grpc/grpc"
+	bsv1 "github.com/serj213/bookService/pb/grpc"
 	"github.com/serj213/bookServiceApi/internal/domain"
 	"github.com/serj213/bookServiceApi/internal/lib"
 	"go.uber.org/zap"
@@ -52,6 +52,7 @@ func (s BookService) Create(ctx context.Context, title string, author string, ca
 		Title: book.Title,
 		Author: book.Author,
 		CategoryId: int(book.CategoryId),
+		CreatedAt: book.CreatedAt.AsTime(),
 	}, nil
 }
 
@@ -75,3 +76,20 @@ func (s BookService) GetBooks(ctx context.Context) ([]domain.Book, error) {
 	log.Info("get books finish")
 	return books, nil
 }
+
+// func (s BookService) UpdateBook(ctx context.Context, book domain.Book) (domain.Book, error) {
+
+// 	log := s.log.With(zap.String("method", "UpdateBook"))
+
+// 	log.Info("update book active")
+
+// 	req := &bsv1.BookRequest{
+// 		Id: int64(book.ID),
+// 		Title: book.Title,
+// 		Author: book.Author,
+// 		CategoryId: int64(book.CategoryId),
+// 	}
+
+
+
+// }

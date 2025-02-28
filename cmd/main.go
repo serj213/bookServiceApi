@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	bsv1 "github.com/serj213/bookService/pb/grpc/grpc"
+	bsv1 "github.com/serj213/bookService/pb/grpc"
 	"github.com/serj213/bookServiceApi/internal/config"
 	HTTPServer "github.com/serj213/bookServiceApi/internal/http"
 	"github.com/serj213/bookServiceApi/internal/services"
