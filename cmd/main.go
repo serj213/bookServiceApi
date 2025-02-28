@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	bsv1 "github.com/serj213/bookService-contract/gen/go/bookService"
+	bsv1 "github.com/serj213/bookService/pb/grpc/grpc"
 	"github.com/serj213/bookServiceApi/internal/config"
 	HTTPServer "github.com/serj213/bookServiceApi/internal/http"
 	"github.com/serj213/bookServiceApi/internal/services"
@@ -53,6 +53,7 @@ func main(){
 	router := mux.NewRouter()
 
 	router.HandleFunc("/create", httpServer.Create).Methods(http.MethodPost)
+	router.HandleFunc("/books", httpServer.GetBooks).Methods(http.MethodGet)
 
 	srv := &http.Server{
 		Handler: router,

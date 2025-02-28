@@ -5,10 +5,11 @@ import (
 	"errors"
 	"fmt"
 
-	bsv1 "github.com/serj213/bookService-contract/gen/go/bookService"
+	bsv1 "github.com/serj213/bookService/pb/grpc/grpc"
 	"github.com/serj213/bookServiceApi/internal/domain"
 	"github.com/serj213/bookServiceApi/internal/lib"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 var ErrBookExist = errors.New("book is exist")
@@ -44,6 +45,8 @@ func (s BookService) Create(ctx context.Context, title string, author string, ca
 		return domain.Book{}, fmt.Errorf("server error")
 	}
 
+	s.log.Info("book create successful")
+
 	return domain.Book{
 		ID: int(book.Id),
 		Title: book.Title,
@@ -53,3 +56,22 @@ func (s BookService) Create(ctx context.Context, title string, author string, ca
 }
 
 
+func (s BookService) GetBooks(ctx context.Context) ([]domain.Book, error) {
+	log := s.log.With(zap.String("method", "GetBooks"))
+
+	log.Info("get books start")
+	res, err := s.grpc.GetBooks(ctx, &emptypb.Empty{})
+	if err != nil {
+		log.Error(err)
+		return []domain.Book{}, fmt.Errorf("server error")
+	}
+
+	books := make([]domain.Book, len(res.Books))
+
+	for i, book := range res.Books{
+		books[i] = bookToDomain(book)
+	}
+
+	log.Info("get books finish")
+	return books, nil
+}

@@ -28,6 +28,11 @@ type ResponseOkBody struct {
 	Data domain.Book `json:"data"`
 }
 
+type GetBooksResponseOk struct {
+	Status string `json:"status"`
+	Books []BookResponse`json:"books"`
+}
+
 
 func ErrResponse(msg string, w http.ResponseWriter, r *http.Request, status int) {
 
@@ -39,7 +44,7 @@ func ErrResponse(msg string, w http.ResponseWriter, r *http.Request, status int)
 	_ = json.NewEncoder(w).Encode(&resp)
 }
 
-func ResponseOk(data any, w http.ResponseWriter) {
+func ResponseOk(data interface{}, w http.ResponseWriter) {
 	w.WriteHeader(http.StatusOK)
 	_ = json.NewEncoder(w).Encode(data)
 }

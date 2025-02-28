@@ -41,3 +41,31 @@ func (h HTTPServer) Create(w http.ResponseWriter, r *http.Request) {
 		CategoryId: book.CategoryId,
 	}, w)
 }
+
+func (h HTTPServer) GetBooks(w http.ResponseWriter, r *http.Request) {
+	
+	books, err := h.BookService.GetBooks(r.Context())
+	if err != nil {
+		ErrResponse("internal", w, r, http.StatusInternalServerError)
+		return 
+	}
+
+	resBooks := make([]BookResponse, len(books))
+
+	for i, book := range books {
+		resBooks[i] = BookResponse{
+			Id: book.ID,
+			Title: book.Title,
+			Author: book.Author,
+			CategoryId: book.CategoryId,
+		}
+	}
+
+	resOk := GetBooksResponseOk{
+		Status: "success",
+		Books: resBooks,
+	}
+
+	ResponseOk(resOk, w)
+
+}
